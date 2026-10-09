@@ -9,16 +9,16 @@ jobs:
 
       - uses: microsoft/setup-msbuild@v2
 
+      - uses: NuGet/setup-nuget@v2
+
+      - name: Restore packages (solution-level, packages.config)
+        run: nuget restore src/F4Utils/F4Utils.sln
+
       - name: Build F4Utils.Campaign (plus its dependencies only)
-        run: >
-          msbuild src/F4Utils/Campaign/F4Utils.Campaign.csproj
-          /restore
-          /p:Configuration=Release
-          /p:Platform=x86
+        run: msbuild src/F4Utils/Campaign/F4Utils.Campaign.csproj /p:Configuration=Release /p:Platform=x86 /p:SolutionDir=$env:GITHUB_WORKSPACE\src\F4Utils\
 
       - name: List output
-        shell: pwsh
-        run: Get-ChildItem src/F4Utils/Campaign/bin -Recurse -Include *.dll,*.pdb | Select-Object FullName
+        run: Get-ChildItem src/F4Utils/Campaign/bin -Recurse -Include *.dll | Select-Object FullName
 
       - uses: actions/upload-artifact@v4
         with:
