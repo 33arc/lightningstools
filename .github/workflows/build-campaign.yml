@@ -1,0 +1,26 @@
+name: build-f4utils-campaign
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: microsoft/setup-msbuild@v2
+
+      - name: Build F4Utils.Campaign (plus its dependencies only)
+        run: >
+          msbuild src/F4Utils/Campaign/F4Utils.Campaign.csproj
+          /restore
+          /p:Configuration=Release
+          /p:Platform=x86
+
+      - name: List output
+        shell: pwsh
+        run: Get-ChildItem src/F4Utils/Campaign/bin -Recurse -Include *.dll,*.pdb | Select-Object FullName
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: f4utils-campaign
+          path: src/F4Utils/Campaign/bin/**/Release/
